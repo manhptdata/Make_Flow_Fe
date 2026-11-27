@@ -1,21 +1,26 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Factory, ShieldCheck } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { useLoginMutation } from "./api";
+import { useGetCsrfQuery, useLazyGetCsrfQuery, useLoginMutation } from "./api";
+import { setCsrfToken } from "@/app/api/baseApi";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Field";
 import { toProblemDetail } from "@/shared/lib/errors";
 
 const schema = z.object({
-  email: z.email("Email không hợp lệ"),
-  password: z.string().min(6, "Mật khẩu cần ít nhất 6 ký tự"),
+  email: z.string().email("Email không hợp lệ"),
+  password: z.string().min(1, "Vui lòng nhập mật khẩu"),
 });
 type FormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  // Khởi tạo CSRF handshake ngầm với Backend Spring Boot
+  const { data: csrfData } = useGetCsrfQuery();
+  const [triggerCsrf] = useLazyGetCsrfQuery();
+
   const [login, state] = useLoginMutation();
   const {
     register,
@@ -23,9 +28,19 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { email: "owner@makeflow.local", password: "demo123" },
+    defaultValues: { email: "", password: "" },
   });
   const submit = handleSubmit(async (values) => {
+    if (!csrfData?.token) {
+      try {
+        const fresh = await triggerCsrf().unwrap();
+        if (fresh?.token) {
+          setCsrfToken(fresh.token);
+        }
+      } catch {
+        // fallback
+      }
+    }
     await login(values).unwrap();
     navigate("/dashboard", { replace: true });
   });
@@ -87,8 +102,11 @@ export default function LoginPage() {
               {state.isLoading ? "Đang đăng nhập…" : "Đăng nhập"}
             </Button>
           </form>
-          <p className="mt-5 rounded-xl bg-slate-50 p-3 text-xs text-slate-500">
-            Tài khoản demo đã được điền sẵn. Mock không lưu token vào localStorage.
+          <p className="mt-6 text-center text-sm text-slate-500">
+            Chưa có cửa hàng hoặc xưởng?{" "}
+            <Link to="/setup/workspace" className="font-semibold text-sky-700 hover:text-sky-800 hover:underline">
+              Đăng ký không gian làm việc
+            </Link>
           </p>
         </div>
       </section>

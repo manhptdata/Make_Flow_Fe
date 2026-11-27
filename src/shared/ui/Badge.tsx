@@ -2,6 +2,7 @@ import type { EntityStatus } from "@/shared/types/api";
 
 const styles: Record<EntityStatus, string> = {
   active: "bg-emerald-50 text-emerald-700",
+  inactive: "bg-slate-100 text-slate-600",
   completed: "bg-emerald-50 text-emerald-700",
   posted: "bg-sky-50 text-sky-700",
   draft: "bg-slate-100 text-slate-600",
@@ -11,6 +12,7 @@ const styles: Record<EntityStatus, string> = {
 
 const labels: Record<EntityStatus, string> = {
   active: "Đang dùng",
+  inactive: "Ngừng dùng",
   completed: "Hoàn thành",
   posted: "Đã ghi sổ",
   draft: "Bản nháp",

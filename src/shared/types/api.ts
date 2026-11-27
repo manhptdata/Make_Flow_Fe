@@ -1,4 +1,11 @@
-export type EntityStatus = "active" | "draft" | "posted" | "completed" | "rejected" | "pending";
+export type EntityStatus =
+  | "active"
+  | "inactive"
+  | "draft"
+  | "posted"
+  | "completed"
+  | "rejected"
+  | "pending";
 
 export interface ListItem {
   id: string;

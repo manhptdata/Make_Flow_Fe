@@ -20,15 +20,15 @@ export function Drawer({
         onClick={onClose}
       />
       <aside
-        className={`fixed right-0 top-0 z-50 h-full w-full max-w-md bg-white shadow-2xl transition-transform ${open ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-lg flex-col bg-white shadow-2xl transition-transform ${open ? "translate-x-0" : "translate-x-full"}`}
       >
-        <header className="flex items-center justify-between border-b p-5">
+        <header className="flex shrink-0 items-center justify-between border-b p-5">
           <h2 className="text-lg font-bold">{title}</h2>
           <Button variant="ghost" size="sm" onClick={onClose} aria-label="Đóng">
             <X className="h-5 w-5" />
           </Button>
         </header>
-        <div className="overflow-y-auto p-5">{children}</div>
+        <div className="flex-1 overflow-y-auto p-5">{children}</div>
       </aside>
     </>
   );
